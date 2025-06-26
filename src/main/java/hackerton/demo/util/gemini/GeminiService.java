@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hackerton.demo.util.gemini.Image.GeminiImage;
 import hackerton.demo.util.gemini.Image.GeminiImageRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -32,17 +33,17 @@ public class GeminiService {
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
-    public GeminiResult getGeminiResponse(String prompt) {
+
+    public String generateGptResponse(String prompt) {
         Map<String, Object> body = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
                                 Map.of("text", prompt + "(1. 2~3줄로 출력할 것 , 2. 소재를 과장하거나 익살스럽게 풍자하는 유머로 응답할 것(블랙코미디). )")
                         ))
-
                 ),
                 "generationConfig", Map.of(
-                        "maxOutputTokens", 100, // 출력되는 토큰 수 제어
-                        "temperature", 0.7 // 1에 가까울 수록 창의적 답변
+                        "maxOutputTokens", 100,
+                        "temperature", 0.7
                 )
         );
 
@@ -56,7 +57,11 @@ public class GeminiService {
                 .bodyToMono(String.class)
                 .block();
 
-        String gptText = extractTextFromGeminiResponse(responseJson);
+        return extractTextFromGeminiResponse(responseJson);
+    }
+
+    public GeminiResult getGeminiResponse(String prompt) {
+        String gptText = generateGptResponse(prompt);
         String imageUrl = getRandomImageUrlFromDB();
         String uuid = UUID.randomUUID().toString();
 
@@ -69,9 +74,7 @@ public class GeminiService {
                 .build();
 
         geminiResultRepository.save(result);
-
         return result;
-
     }
 
     private String getRandomImageUrlFromDB() {
@@ -97,5 +100,19 @@ public class GeminiService {
         } catch (Exception e) {
             return "Gemini 응답 파싱 오류: " + e.getMessage();
         }
+    }
+
+    @Transactional
+    public GeminiResult regenerate(String uuid) {
+        GeminiResult result = geminiResultRepository.findById(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("해당 결과가 존재하지 않습니다."));
+
+        String prompt = result.getRequestPrompt();
+        String newResponse = generateGptResponse(prompt);
+        String newImageUrl = getRandomImageUrlFromDB();
+
+        result.regenerate(newResponse, newImageUrl);
+
+        return geminiResultRepository.save(result);
     }
 }

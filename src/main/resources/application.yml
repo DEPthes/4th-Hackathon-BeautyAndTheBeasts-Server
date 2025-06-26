@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:mysql://beautyandthebeats-db.cjqc2sugut8p.ap-southeast-2.rds.amazonaws.com:3306/beautydb
+    url: jdbc:mysql://beautyandthebeasts-db.clukcs0kkzk2.ap-northeast-2.rds.amazonaws.com:3306/beautyandthebeasts
+
     username: admin
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver

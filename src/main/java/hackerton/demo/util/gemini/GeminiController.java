@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -29,5 +26,16 @@ public class GeminiController {
         GeminiResult result = geminiService.getGeminiResponse(request.getPrompt());
         GeminiResponse response = GeminiResponse.from(result);
         return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(
+            summary = "Gemini 재응답",
+            description = "재생성을 누르면 uuid를 기반으로 사진과 GEMINI응답값을 재생성합니다."
+    )
+    @PutMapping("/{uuid}/regenerate")
+    public ResponseEntity<GeminiResponse> regenerateGemini(@PathVariable String uuid) {
+        GeminiResult updated = geminiService.regenerate(uuid);
+        return ResponseEntity.ok(GeminiResponse.from(updated));
     }
 }
