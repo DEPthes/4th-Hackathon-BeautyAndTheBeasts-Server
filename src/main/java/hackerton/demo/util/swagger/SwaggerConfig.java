@@ -16,7 +16,7 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("오늘도 살아남으셨군요, 축하드립니다 API")
+                .title("네, 그게 칭찬입니다 API")
                 .description("DEPth 해커톤 *오늘도 살아남으셨군요, 축하드립니다* 프로젝트 API 문서입니다.")
                 .version("1.0.0");
     }
