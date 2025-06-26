@@ -104,7 +104,7 @@ public class GeminiService {
 
     @Transactional
     public GeminiResult regenerate(String uuid) {
-        GeminiResult result = geminiResultRepository.findById(uuid)
+        GeminiResult result = geminiResultRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("해당 결과가 존재하지 않습니다."));
 
         String prompt = result.getRequestPrompt();
