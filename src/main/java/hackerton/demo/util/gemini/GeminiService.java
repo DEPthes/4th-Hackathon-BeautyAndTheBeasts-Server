@@ -33,14 +33,10 @@ public class GeminiService {
             .build();
 
     public GeminiResult getGeminiResponse(String prompt) {
-        if (apiKey == null || apiKey.isBlank()) {
-            return errorResult(prompt, "API 키가 설정되어 있지 않습니다.");
-        }
-
         Map<String, Object> body = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
-                                Map.of("text", prompt + "(1. 2~3줄로 출력할 것 , 2.소재를 과장하거나 익살스럽게 풍자하는 유머로 응답할 것(블랙코미디). 3. 존댓말 쓰지 말것. )")
+                                Map.of("text", prompt + "(1. 2~3줄로 출력할 것 , 2. 소재를 과장하거나 익살스럽게 풍자하는 유머로 응답할 것(블랙코미디). )")
                         ))
 
                 ),
@@ -60,16 +56,10 @@ public class GeminiService {
                 .bodyToMono(String.class)
                 .block();
 
-        // JSON 파싱 필요 (지금은 응답 텍스트 전체를 그대로 사용)
         String gptText = extractTextFromGeminiResponse(responseJson);
-
-        // 랜덤 이미지 URL
         String imageUrl = getRandomImageUrlFromDB();
-
-        // UUID
         String uuid = UUID.randomUUID().toString();
 
-        // Entity 저장
         GeminiResult result = GeminiResult.builder()
                 .uuid(uuid)
                 .requestPrompt(prompt)
@@ -107,15 +97,5 @@ public class GeminiService {
         } catch (Exception e) {
             return "Gemini 응답 파싱 오류: " + e.getMessage();
         }
-    }
-
-    private GeminiResult errorResult(String prompt, String errorMessage) {
-        return GeminiResult.builder()
-                .uuid("error")
-                .requestPrompt(prompt)
-                .gptResponse(errorMessage)
-                .imageUrl(null)
-                .createdAt(LocalDateTime.now())
-                .build();
     }
 }
