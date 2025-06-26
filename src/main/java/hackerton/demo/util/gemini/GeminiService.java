@@ -31,7 +31,7 @@ public class GeminiService {
         Map<String, Object> body = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
-                                Map.of("text", prompt + "(2~3줄로 요약해줘)")
+                                Map.of("text", prompt + "(1. 2~3줄로 출력할 것 , 2.소재를 과장하거나 익살스럽게 풍자하는 유머로 응답할 것(블랙코미디). 3. 존댓말 쓰지 말것. )")
                         ))
 
                 ),
