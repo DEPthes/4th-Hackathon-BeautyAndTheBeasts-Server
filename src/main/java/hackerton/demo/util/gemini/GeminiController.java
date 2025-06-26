@@ -38,4 +38,14 @@ public class GeminiController {
         GeminiResult updated = geminiService.regenerate(uuid);
         return ResponseEntity.ok(GeminiResponse.from(updated));
     }
+
+    @Operation(
+            summary = "Gemini 응답값 조회",
+            description = "uuid를 기반으로 조회"
+    )
+    @GetMapping("/{uuid}")
+    public ResponseEntity<GeminiResponse> getGeminiResult(@PathVariable String uuid) {
+        GeminiResult result = geminiService.findByUuid(uuid);
+        return ResponseEntity.ok(GeminiResponse.from(result));
+    }
 }

@@ -115,4 +115,11 @@ public class GeminiService {
 
         return geminiResultRepository.save(result);
     }
+
+
+    public GeminiResult findByUuid(String uuid) {
+        return geminiResultRepository.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("해당 결과가 존재하지 않습니다."));
+    }
+
 }
